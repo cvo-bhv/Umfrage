@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umfrage zur Facharbeit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .scale-radio:checked + div {
+            background-color: #4F46E5;
+            color: white;
+            border-color: #4F46E5;
+        }
+    </style>
+    <script>var submitted = false;</script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen pb-20">
+
+    <!-- Iframe für Datenübertragung -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {showSuccess()}"></iframe>
+
+    <div class="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="bg-white rounded-t-xl shadow-sm border-b-4 border-indigo-600 p-8 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Umfrage zur Facharbeit</h1>
+            <p class="text-gray-600">Bitte fülle die Fragen ehrlich aus. Alle Daten werden anonym erhoben.</p>
+            <p class="text-sm text-red-500 mt-4">* Erforderlich</p>
+        </div>
+
+        <!-- FORMULAR -->
+        <form id="surveyForm" target="hidden_iframe" method="POST" class="space-y-4">
+            
+            <!-- Section 1 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 space-y-8">
+                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Teil 1: Selbsteinschätzung</h2>
+                <div id="scale-questions-container" class="space-y-8"></div>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 space-y-6">
+                <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Teil 2: Persönliche Angaben</h2>
+                
+                <!-- Geschlecht -->
+                <div class="space-y-3">
+                    <label class="block text-base font-medium text-gray-900">13. Gib dein Geschlecht an. <span class="text-red-500">*</span></label>
+                    <div class="space-y-2">
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="geschlecht" value="Männlich" required class="h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Männlich</span>
+                        </label>
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="geschlecht" value="Weiblich" class="h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Weiblich</span>
+                        </label>
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="geschlecht" value="Divers" class="h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Divers</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Ernährung -->
+                <div class="space-y-3 pt-4">
+                    <label class="block text-base font-medium text-gray-900">14. Gib deine Ernährungsform an. <span class="text-red-500">*</span></label>
+                    <input type="hidden" name="ernaehrung" id="finalDietInput">
+                    <div class="space-y-2">
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="diet_radio" value="Vegetarisch" required class="diet-radio h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Vegetarisch</span>
+                        </label>
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="diet_radio" value="Vegan" class="diet-radio h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Vegan</span>
+                        </label>
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="diet_radio" value="Kein Fisch" class="diet-radio h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Kein Fisch</span>
+                        </label>
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                            <input type="radio" name="diet_radio" value="Fleisch und Fisch" class="diet-radio h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Fleisch & Fisch</span>
+                        </label>
+                        <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition">
+                            <input type="radio" name="diet_radio" value="Sonstiges" id="diet-other-radio" class="diet-radio h-4 w-4 text-indigo-600 mt-1 self-start">
+                            <div class="ml-3 w-full">
+                                <span class="text-gray-700 block mb-1">Sonstiges:</span>
+                                <input type="text" id="diet-other-text" class="w-full border-b border-gray-300 focus:outline-none bg-transparent text-sm py-1" placeholder="...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historie -->
+                <div class="space-y-3 pt-4">
+                    <label class="block text-base font-medium text-gray-900">15. Historie (optional)</label>
+                    <textarea name="history" rows="3" class="w-full rounded-lg border-gray-300 border shadow-sm p-3"></textarea>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="pt-6">
+                <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition-all">Absenden</button>
+            </div>
+        </form>
+
+        <div id="successMessage" class="hidden mt-8 bg-green-50 border border-green-200 rounded-xl p-8 text-center">
+            <h2 class="text-2xl font-bold text-green-800 mb-2">Vielen Dank!</h2>
+            <p class="text-green-700">Deine Antwort wurde gespeichert.</p>
+            <button onclick="window.location.reload()" class="mt-4 text-green-600 underline">Weitere Antwort senden</button>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // HIER DEINE URL EINFÜGEN (Prüfe, ob sie sich geändert hat)
+        // ============================================================
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxw9FubsVakTfJmEjlxcuK9FhBEuRMJUR-EWn9G-_uMLZYx3uKyLN92VOe9a1Cgn97a7A/exec";
+        // ============================================================
+
+        // Questions Logic
+        const questions = [
+            "Ich träume regelmäßig vor mich hin und stelle mir Dinge vor, die mir passieren könnten.",
+            "Ich kann mich sehr gut in die Gefühle fiktiver Figuren hineinversetzen.",
+            "In Notfällen fühle ich mich ängstlich und unwohl.",
+            "Ich trinke täglich ausreichend Wasser.",
+            "Ich beschäftige mich häufig intensiv mit Büchern oder Filmen, besonders mit den Figuren.",
+            "Ich nehme mir die Zeit, andere Meinungen wahrzunehmen, auch wenn ich mir sicher bin, dass ich Recht habe.",
+            "Eine angespannte emotionale Situation macht mir Angst.",
+            "Ich empfinde viel Mitleid für eine Person, die ungerecht behandelt wird.",
+            "Ich neige dazu, in Notfällen die Kontrolle zu verlieren.",
+            "Ich bin oft sehr berührt von Dingen, die ich sehe.",
+            "Ich glaube, dass jede Situation zwei Seiten hat und versuche, beide zu betrachten.",
+            "Bevor ich jemanden kritisiere, versuche ich mir vorzustellen, wie ich mich an seiner Stelle fühlen würde."
+        ];
+        const container = document.getElementById('scale-questions-container');
+        questions.forEach((q, index) => {
+            const num = index + 1;
+            container.insertAdjacentHTML('beforeend', `
+                <div class="hover:bg-gray-50 p-4 rounded-lg">
+                    <label class="block font-medium mb-3">${num}. ${q} <span class="text-red-500">*</span></label>
+                    <div class="flex justify-between items-center max-w-md">
+                        <span class="text-xs text-gray-500 w-16 text-center">Trifft <br>gar nicht zu</span>
+                        <div class="flex gap-2 sm:gap-6">
+                            ${[1, 2, 3, 4].map(val => `<label class="cursor-pointer"><input type="radio" name="q${num}" value="${val}" required class="sr-only peer"><div class="w-10 h-10 flex items-center justify-center rounded-full border-2 border-gray-200 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">${val}</div></label>`).join('')}
+                        </div>
+                        <span class="text-xs text-gray-500 w-16 text-center">Trifft <br>voll zu</span>
+                    </div>
+                </div>`);
+        });
+
+        // Diet Logic
+        const dietRadios = document.querySelectorAll('.diet-radio');
+        const otherText = document.getElementById('diet-other-text');
+        const hiddenDiet = document.getElementById('finalDietInput');
+        function updateDiet() {
+            let sel = document.querySelector('input[name="diet_radio"]:checked');
+            if(sel) hiddenDiet.value = (sel.value === "Sonstiges") ? "Sonstiges: " + otherText.value : sel.value;
+        }
+        dietRadios.forEach(r => r.addEventListener('change', updateDiet));
+        otherText.addEventListener('input', () => { document.getElementById('diet-other-radio').checked = true; updateDiet(); });
+
+        // Submit
+        const form = document.getElementById('surveyForm');
+        form.addEventListener('submit', function(e) {
+            if(!scriptURL) { alert("Bitte URL im Code einfügen!"); e.preventDefault(); return; }
+            form.action = scriptURL;
+            updateDiet();
+            submitted = true;
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerText = "Wird gesendet...";
+        });
+
+        function showSuccess() {
+            form.classList.add('hidden');
+            document.getElementById('successMessage').classList.remove('hidden');
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+    </script>
+</body>
+</html>
