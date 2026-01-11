@@ -15,7 +15,11 @@
             border-color: #4F46E5;
         }
     </style>
-    <script>var submitted = false;</script>
+    <script>
+        var submitted = false;
+        // Startzeitpunkt festhalten, sobald die Seite lädt
+        const startTime = Date.now();
+    </script>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen pb-20">
 
@@ -34,6 +38,10 @@
         <!-- FORMULAR -->
         <form id="surveyForm" target="hidden_iframe" method="POST" class="space-y-4">
             
+            <!-- VERSTECKTE METADATEN FELDER -->
+            <input type="hidden" name="dauer" id="inputDuration">
+            <input type="hidden" name="geraet" id="inputDevice">
+
             <!-- Section 1 -->
             <div class="bg-white rounded-xl shadow-sm p-6 space-y-8">
                 <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Teil 1: Selbsteinschätzung</h2>
@@ -157,26 +165,36 @@
         dietRadios.forEach(r => r.addEventListener('change', updateDiet));
         otherText.addEventListener('input', () => { document.getElementById('diet-other-radio').checked = true; updateDiet(); });
 
-        // Submit
+        // Submit Logic (Mit Metadaten)
         const form = document.getElementById('surveyForm');
         form.addEventListener('submit', function(e) {
             if(!scriptURL) { alert("Bitte URL im Code einfügen!"); e.preventDefault(); return; }
             form.action = scriptURL;
             updateDiet();
+            
+            // --- METADATEN BERECHNEN ---
+            // 1. Dauer in Sekunden berechnen
+            const durationSeconds = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('inputDuration').value = durationSeconds;
+
+            // 2. Gerätetyp grob erkennen
+            let deviceType = "Desktop/Laptop";
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                deviceType = "Mobile/Tablet";
+            }
+            document.getElementById('inputDevice').value = deviceType;
+            // ---------------------------
+
             submitted = true;
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('submitBtn').innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Wird gesendet...';
 
-            // FALLBACK: Wenn das Iframe nicht schnell genug antwortet, schalten wir trotzdem um.
-            // Das verhindert, dass der Nutzer ewig wartet, obwohl die Daten oft schon da sind.
             setTimeout(function() {
-                // Prüfen, ob Erfolgsmeldung schon sichtbar ist (durch iframe onload)
-                // Falls nicht, zeigen wir sie jetzt an.
                 const successMsg = document.getElementById('successMessage');
                 if (successMsg.classList.contains('hidden')) {
                     showSuccess();
                 }
-            }, 2500); // 2.5 Sekunden Timeout
+            }, 2500); 
         });
 
         function showSuccess() {
