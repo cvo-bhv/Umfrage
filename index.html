@@ -165,7 +165,18 @@
             updateDiet();
             submitted = true;
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').innerText = "Wird gesendet...";
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Wird gesendet...';
+
+            // FALLBACK: Wenn das Iframe nicht schnell genug antwortet, schalten wir trotzdem um.
+            // Das verhindert, dass der Nutzer ewig wartet, obwohl die Daten oft schon da sind.
+            setTimeout(function() {
+                // Prüfen, ob Erfolgsmeldung schon sichtbar ist (durch iframe onload)
+                // Falls nicht, zeigen wir sie jetzt an.
+                const successMsg = document.getElementById('successMessage');
+                if (successMsg.classList.contains('hidden')) {
+                    showSuccess();
+                }
+            }, 2500); // 2.5 Sekunden Timeout
         });
 
         function showSuccess() {
