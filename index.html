@@ -17,7 +17,6 @@
     </style>
     <script>
         var submitted = false;
-        // Startzeitpunkt festhalten, sobald die Seite lädt
         const startTime = Date.now();
     </script>
 </head>
@@ -52,9 +51,9 @@
             <div class="bg-white rounded-xl shadow-sm p-6 space-y-6">
                 <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">Teil 2: Persönliche Angaben</h2>
                 
-                <!-- Geschlecht -->
+                <!-- Geschlecht (Jetzt Frage 15) -->
                 <div class="space-y-3">
-                    <label class="block text-base font-medium text-gray-900">13. Gib dein Geschlecht an. <span class="text-red-500">*</span></label>
+                    <label class="block text-base font-medium text-gray-900">15. Gib dein Geschlecht an. <span class="text-red-500">*</span></label>
                     <div class="space-y-2">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
                             <input type="radio" name="geschlecht" value="Männlich" required class="h-4 w-4 text-indigo-600 border-gray-300"><span class="ml-3">Männlich</span>
@@ -68,9 +67,9 @@
                     </div>
                 </div>
 
-                <!-- Ernährung -->
+                <!-- Ernährung (Jetzt Frage 16) -->
                 <div class="space-y-3 pt-4">
-                    <label class="block text-base font-medium text-gray-900">14. Gib deine Ernährungsform an. <span class="text-red-500">*</span></label>
+                    <label class="block text-base font-medium text-gray-900">16. Gib deine Ernährungsform an. <span class="text-red-500">*</span></label>
                     <input type="hidden" name="ernaehrung" id="finalDietInput">
                     <div class="space-y-2">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
@@ -95,9 +94,9 @@
                     </div>
                 </div>
 
-                <!-- Historie -->
+                <!-- Historie (Jetzt Frage 17 - Text angepasst) -->
                 <div class="space-y-3 pt-4">
-                    <label class="block text-base font-medium text-gray-900">15. Historie (optional)</label>
+                    <label class="block text-base font-medium text-gray-900">17. Warst du schon mal vegetarisch/vegan? Falls ja, warum bist du es nicht mehr?</label>
                     <textarea name="history" rows="3" class="w-full rounded-lg border-gray-300 border shadow-sm p-3"></textarea>
                 </div>
             </div>
@@ -123,7 +122,7 @@
         const scriptURL = "https://script.google.com/macros/s/AKfycbwp7eehFy0TkxoNi4biBMTlXbfM0fxCxVLhXfABB2JiqIABADwxmaH3AW41-Bq1VdbmSQ/exec";
         // ============================================================
 
-        // Questions Logic
+        // Questions Logic - JETZT MIT 14 FRAGEN
         const questions = [
             "Ich träume regelmäßig vor mich hin und stelle mir Dinge vor, die mir passieren könnten.",
             "Ich kann mich sehr gut in die Gefühle fiktiver Figuren hineinversetzen.",
@@ -131,13 +130,16 @@
             "Ich trinke täglich ausreichend Wasser.",
             "Ich beschäftige mich häufig intensiv mit Büchern oder Filmen, besonders mit den Figuren.",
             "Ich nehme mir die Zeit, andere Meinungen wahrzunehmen, auch wenn ich mir sicher bin, dass ich Recht habe.",
+            "Ich setze mir realistische Ziele.", // NEU (Pos 7)
             "Eine angespannte emotionale Situation macht mir Angst.",
             "Ich empfinde viel Mitleid für eine Person, die ungerecht behandelt wird.",
             "Ich neige dazu, in Notfällen die Kontrolle zu verlieren.",
+            "Ich arbeite lieber allein als in einer Gruppe.", // NEU (Pos 11)
             "Ich bin oft sehr berührt von Dingen, die ich sehe.",
             "Ich glaube, dass jede Situation zwei Seiten hat und versuche, beide zu betrachten.",
             "Bevor ich jemanden kritisiere, versuche ich mir vorzustellen, wie ich mich an seiner Stelle fühlen würde."
         ];
+
         const container = document.getElementById('scale-questions-container');
         questions.forEach((q, index) => {
             const num = index + 1;
@@ -165,25 +167,19 @@
         dietRadios.forEach(r => r.addEventListener('change', updateDiet));
         otherText.addEventListener('input', () => { document.getElementById('diet-other-radio').checked = true; updateDiet(); });
 
-        // Submit Logic (Mit Metadaten)
+        // Submit Logic
         const form = document.getElementById('surveyForm');
         form.addEventListener('submit', function(e) {
             if(!scriptURL) { alert("Bitte URL im Code einfügen!"); e.preventDefault(); return; }
             form.action = scriptURL;
             updateDiet();
             
-            // --- METADATEN BERECHNEN ---
-            // 1. Dauer in Sekunden berechnen
+            // Metadata
             const durationSeconds = Math.floor((Date.now() - startTime) / 1000);
             document.getElementById('inputDuration').value = durationSeconds;
-
-            // 2. Gerätetyp grob erkennen
             let deviceType = "Desktop/Laptop";
-            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                deviceType = "Mobile/Tablet";
-            }
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) deviceType = "Mobile/Tablet";
             document.getElementById('inputDevice').value = deviceType;
-            // ---------------------------
 
             submitted = true;
             document.getElementById('submitBtn').disabled = true;
@@ -191,9 +187,7 @@
 
             setTimeout(function() {
                 const successMsg = document.getElementById('successMessage');
-                if (successMsg.classList.contains('hidden')) {
-                    showSuccess();
-                }
+                if (successMsg.classList.contains('hidden')) showSuccess();
             }, 2500); 
         });
 
